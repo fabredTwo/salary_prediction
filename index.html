@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Salary Prediction API</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d1a2e;
+    --surface: #112236;
+    --surface2: #163047;
+    --border: #1e3d5a;
+    --accent: #5bc8e8;
+    --accent2: #f0e68c;
+    --text: #e8f4f8;
+    --muted: #5e8ea8;
+    --danger: #ff4e6a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(91,200,232,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,200,232,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 420px; height: 420px; background: rgba(91,200,232,0.07); top: -120px; left: -100px; }
+  .orb2 { width: 320px; height: 320px; background: rgba(240,230,140,0.06); bottom: -60px; right: -60px; }
+
+  .container { position: relative; z-index: 1; width: 100%; max-width: 820px; }
+
+  /* Header */
+  .header { margin-bottom: 36px; animation: fadeDown 0.6s ease both; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(91,200,232,0.1);
+    border: 1px solid rgba(91,200,232,0.25);
+    border-radius: 100px; padding: 6px 14px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--accent); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 18px;
+  }
+  .badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 5vw, 44px); font-weight: 400; line-height: 1.15; margin-bottom: 10px; }
+  h1 em { font-style: italic; color: var(--accent2); }
+  .subtitle { color: var(--muted); font-size: 15px; font-weight: 300; line-height: 1.6; }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px;
+    animation: fadeUp 0.6s 0.1s ease both;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(91,200,232,0.5), transparent);
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; margin-bottom: 20px;
+  }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 400px) { .grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .label i { font-style: normal; font-size: 13px; }
+
+  /* Custom select wrapper */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '';
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--muted);
+    pointer-events: none;
+    transition: border-color 0.2s;
+  }
+  .select-wrap:focus-within::after { border-top-color: var(--accent); }
+
+  select, input[type="number"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 36px 11px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  input[type="number"] { padding-right: 14px; cursor: text; }
+  select:focus, input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(91,200,232,0.1);
+    background: rgba(91,200,232,0.04);
+  }
+  select option { background: #163047; color: var(--text); }
+  input[type="number"]::placeholder { color: var(--muted); font-size: 13px; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* Bottom row */
+  .bottom-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+  @media (max-width: 500px) { .bottom-row { grid-template-columns: 1fr; } }
+
+  /* Button */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--accent); color: #0d1a2e;
+    border: none; border-radius: 12px;
+    padding: 14px 28px;
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,200,232,0.3); }
+  .btn:active { transform: translateY(0); }
+  .btn.loading { opacity: 0.7; pointer-events: none; }
+  .btn svg { transition: transform 0.3s; }
+  .btn:hover svg { transform: rotate(15deg); }
+
+  /* Result */
+  .result-panel {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px 24px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-width: 190px; min-height: 90px;
+    text-align: center; transition: all 0.4s ease;
+    position: relative; overflow: hidden;
+  }
+  .result-panel.active { border-color: rgba(240,230,140,0.4); background: rgba(240,230,140,0.05); }
+  .result-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .result-value { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--muted); letter-spacing: -0.02em; transition: color 0.4s, transform 0.4s; }
+  .result-value.show { color: var(--accent2); transform: scale(1.05); }
+  .result-sub { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+  .shimmer { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(91,200,232,0.07), transparent); transform: translateX(-100%); }
+  .shimmer.running { animation: shimmer 1.2s infinite; }
+
+  .error-msg {
+    margin-top: 12px; padding: 10px 16px;
+    background: rgba(255,78,106,0.08); border: 1px solid rgba(255,78,106,0.2);
+    border-radius: 10px; color: var(--danger);
+    font-size: 13px; font-family: 'DM Mono', monospace; display: none;
+  }
+  .error-msg.visible { display: block; animation: fadeUp 0.3s ease; }
+
+  .footer { margin-top: 20px; text-align: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); animation: fadeUp 0.6s 0.3s ease both; }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="badge"><span></span> salary.api/v1/predict</div>
+    <h1>Predict your <em>salary</em><br>with precision.</h1>
+    <p class="subtitle">Fill in your candidate profile and let the model estimate your market value in real time.</p>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+
+     <form id="formulario">
+        <div class="field">
+        <label class="label"><i>💼</i> Job Title</label>
+        <div class="select-wrap">
+          <select id="jobTitle">
+            <option value="" disabled selected>Select role</option>
+            <option>AI Engineer</option>
+            <option>Backend Developer</option>
+            <option>Business Analyst</option>
+            <option>Cloud Engineer</option>
+            <option>Cybersecurity Analyst</option>
+            <option>Data Analyst</option>
+            <option>Data Scientist</option>
+            <option>DevOps Engineer</option>
+            <option>Frontend Developer</option>
+            <option>Machine Learning Engineer</option>
+            <option>Product Manager</option>
+            <option>Software Engineer</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>📅</i> Experience (yrs)</label>
+        <input type="number" id="experience" placeholder="e.g., 5" min="0" max="50"/>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>🎓</i> Education</label>
+        <div class="select-wrap">
+          <select id="education">
+            <option value="" disabled selected>Select level</option>
+            <option>High School</option>
+            <option>Diploma</option>
+            <option>Bachelor</option>
+            <option>Master</option>
+            <option>PhD</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>🧩</i> Skills Count</label>
+        <input type="number" id="skills" placeholder="e.g., 8" min="0"/>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>🏭</i> Industry</label>
+        <div class="select-wrap">
+          <select id="industry">
+            <option value="" disabled selected>Select industry</option>
+            <option>Consulting</option>
+            <option>Education</option>
+            <option>Finance</option>
+            <option>Government</option>
+            <option>Healthcare</option>
+            <option>Manufacturing</option>
+            <option>Media</option>
+            <option>Retail</option>
+            <option>Technology</option>
+            <option>Telecom</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>🏗️</i> Company Size</label>
+        <div class="select-wrap">
+          <select id="companySize">
+            <option value="" disabled selected>Select size</option>
+            <option>Startup</option>
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Large</option>
+            <option>Enterprise</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>📍</i> Location</label>
+        <div class="select-wrap">
+          <select id="location">
+            <option value="" disabled selected>Select location</option>
+            <option>Australia</option>
+            <option>Canada</option>
+            <option>Germany</option>
+            <option>India</option>
+            <option>Netherlands</option>
+            <option>Remote</option>
+            <option>Singapore</option>
+            <option>Sweden</option>
+            <option>UK</option>
+            <option>USA</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>🛜</i> Remote Work</label>
+        <div class="select-wrap">
+          <select id="remote">
+            <option value="" disabled selected>Select mode</option>
+            <option>Hybrid</option>
+            <option>No</option>
+            <option>Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><i>📜</i> Certifications</label>
+        <input type="number" id="certs" placeholder="e.g., 2" min="0"/>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="bottom-row">
+      <button class="btn" id="predictBtn" onclick="predict()">
+        <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+        </svg>
+        Predict Salary Now
+      </button>
+
+      <div class="result-panel" id="resultPanel">
+        <div class="shimmer" id="shimmer"></div>
+        <div class="result-label">Predicted Salary</div>
+        <div class="result-value" id="resultValue">$ ——,———</div>
+        <div class="result-sub" id="resultSub">/ year</div>
+      </div>
+
+    </div>
+  
+    </form>
+  </div>
+</div>
+</body>
+</html>

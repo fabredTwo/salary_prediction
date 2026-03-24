@@ -1,6 +1,7 @@
 import traceback
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from mangum import Mangum
 from model import SalaryPredictor
 
 app = FastAPI()
@@ -50,3 +51,5 @@ def predict(request: SalaryRequest):
         print("ERROR DETECTADO")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e)) from e
+
+handler = Mangum(app)
