@@ -1,11 +1,14 @@
-FROM public.ecr.aws/lambda/python:3.11
+FROM python:3.11-slim
 
-RUN dnf install -y gcc && dnf clean all
+WORKDIR /var/task
+
+RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt awslambdaric
 
-COPY . ${LAMBDA_TASK_ROOT}
+COPY . .
 
+ENTRYPOINT ["/usr/local/bin/python", "-m", "awslambdaric"]
 CMD ["app.handler"]
