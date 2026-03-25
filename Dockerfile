@@ -1,6 +1,6 @@
 FROM public.ecr.aws/lambda/python:3.11
 
-RUN microdnf install -y gcc && microdnf clean all
+RUN dnf install -y gcc && dnf clean all
 
 COPY requirements.txt .
 
