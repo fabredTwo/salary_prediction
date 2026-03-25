@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - echo Construyendo imagen...
-      - docker build -t imagesalary .
+      - docker build --no-cache -t imagesalary .
       - docker tag imagesalary:latest 997141224904.dkr.ecr.us-east-1.amazonaws.com/imagesalary:latest
 
   post_build:
