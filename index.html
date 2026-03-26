@@ -294,15 +294,15 @@
             })
         });
 
-        
+
         if(!response.ok) {
             alert("Error in the prediction. Please try again.");
             //await setLoading(false);
             return;
         }
         const data = await response.json();
-        alert(`Predicted Salary: $${data.predicted_salary.toLocaleString()} per year`);
-        document.getElementById("resultValue").textContent = `$ ${data.predicted_salary.toLocaleString()}`;
+        alert(`Predicted Salary: $${data.prediction.toLocaleString()} per year`);
+        document.getElementById("resultValue").textContent = `$ ${data.prediction.toLocaleString()}`;
         /**
         document.getElementById("resultPanel").classList.add("active");
         setTimeout(() => {
