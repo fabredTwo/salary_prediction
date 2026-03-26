@@ -208,13 +208,16 @@
     async function setLoading(isLoading) {
         const btn = document.getElementById("predictBtn");
         const icon = document.getElementById("btnIcon");
+        const shimmer = document.getElementById("shimmer");
 
         if (isLoading) {
             btn.classList.add("loading");
             icon.style.animation = "spin 1s linear infinite";
+            shimmer.classList.add("running");
         } else {
             btn.classList.remove("loading");
             icon.style.animation = "";
+            shimmer.classList.remove("running");
         }
     }
 
@@ -274,43 +277,50 @@
             return false;
         }
 
-       // await setLoading(true);
+        const resultPanel = document.getElementById("resultPanel");
+        const resultValue = document.getElementById("resultValue");
 
-        const response = await fetch("https://m705skz6xe.execute-api.us-east-1.amazonaws.com/predict", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                job_title: variableJobtitle,
-                experience_years: Number(variableExperience),
-                education_level: variableEducation,
-                skills_count: Number(variableSkills),
-                industry: variableIndustry,
-                company_size: variableCompanySize,
-                location: variableLocation,
-                remote_work: variableRemote,
-                certifications: Number(variableCertifications)
-            })
-        });
+        resultPanel.classList.remove("active");
+        resultValue.classList.remove("show");
 
+        await setLoading(true);
 
-        if(!response.ok) {
-            alert("Error in the prediction. Please try again.");
-            //await setLoading(false);
-            return;
+        try {
+            const response = await fetch("https://m705skz6xe.execute-api.us-east-1.amazonaws.com/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    job_title: variableJobtitle,
+                    experience_years: Number(variableExperience),
+                    education_level: variableEducation,
+                    skills_count: Number(variableSkills),
+                    industry: variableIndustry,
+                    company_size: variableCompanySize,
+                    location: variableLocation,
+                    remote_work: variableRemote,
+                    certifications: Number(variableCertifications)
+                })
+            });
+
+            if (!response.ok) {
+                alert("Error in the prediction. Please try again.");
+                return;
+            }
+
+            const data = await response.json();
+            resultValue.textContent = `$ ${data.prediction.toLocaleString()}`;
+            resultPanel.classList.add("active");
+
+            setTimeout(() => {
+                resultValue.classList.add("show");
+            }, 100);
+        } catch (error) {
+            alert("Error connecting to the prediction service. Please try again.");
+        } finally {
+            await setLoading(false);
         }
-        const data = await response.json();
-        alert(`Predicted Salary: $${data.prediction.toLocaleString()} per year`);
-        document.getElementById("resultValue").textContent = `$ ${data.prediction.toLocaleString()}`;
-        /**
-        document.getElementById("resultPanel").classList.add("active");
-        setTimeout(() => {
-            document.getElementById("resultValue").classList.add("show");
-        }, 100);    
-        **/
-        //await setLoading(false);
-        //return response;
     }
 </script>
 </head>
