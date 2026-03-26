@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - echo Subiendo HTML a S3...
-      - aws s3 cp static/index.html s3://sandro-aws-estudio-s3-001/SalaryPredict/index.html --content-type "text/html" --region us-east-2
+      - aws s3 cp index.html s3://sandro-aws-estudio-s3-001/SalaryPredict/index.html --content-type "text/html" --region us-east-2
 
   post_build:
     commands:
