@@ -231,52 +231,52 @@
 
         if (!variableJobtitle) {
             alert("Please select a job title.");
-            return;
+            return false;
         }
 
         if (!variableExperience) {
             alert("Please enter your years of experience.");
-            return;
+            return false;
         }
 
         if (!variableEducation) {
             alert("Please select your education level.");
-            return;
+            return false;
         }
 
         if (!variableSkills) {
             alert("Please enter your skills count.");
-            return;
+            return false;
         }
 
         if (!variableIndustry) {
             alert("Please select your industry.");
-            return;
+            return false;
         }
 
         if (!variableCompanySize) {
             alert("Please select the company size.");
-            return;
+            return false;
         }
 
         if (!variableLocation) {
             alert("Please select your location.");
-            return;
+            return false;
         }
 
         if (!variableRemote) {
             alert("Please select the remote work mode.");
-            return;
+            return false;
         }
 
         if (!variableCertifications) {
             alert("Please enter your number of certifications.");
-            return;
+            return false;
         }
 
-        await setLoading(true);
+       // await setLoading(true);
 
-        const response = await fetch("https://ibr8fljrlk.execute-api.us-east-1.amazonaws.com/prediccionController", {
+        const response = await fetch("https://m705skz6xe.execute-api.us-east-1.amazonaws.com/predict", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -294,8 +294,20 @@
             })
         });
 
-        await setLoading(false);
-        return response;
+        if(!response.ok) {
+            alert("Error in the prediction. Please try again.");
+            //await setLoading(false);
+            return;
+        }
+        const data = await response.json();
+        document.getElementById("resultValue").textContent = `$ ${data.predicted_salary.toLocaleString()}`;
+        document.getElementById("resultPanel").classList.add("active");
+        setTimeout(() => {
+            document.getElementById("resultValue").classList.add("show");
+        }, 100);    
+
+        //await setLoading(false);
+        //return response;
     }
 </script>
 </head>
@@ -437,7 +449,7 @@
     <div class="divider"></div>
 
     <div class="bottom-row">
-      <button class="btn" id="predictBtn" onclick="predict()">
+      <button type="button" class="btn" id="predictBtn" onclick="predict()">
         <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
         </svg>

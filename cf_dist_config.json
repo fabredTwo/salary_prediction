@@ -1,0 +1,109 @@
+{
+    "CallerReference": "475cad20-8911-4f0f-ac54-621259882aa7",
+    "Aliases": {
+        "Quantity": 0
+    },
+    "DefaultRootObject": "index.html",
+    "Origins": {
+        "Quantity": 1,
+        "Items": [
+            {
+                "Id": "sandro-aws-estudio-s3-001.s3.us-east-2.amazonaws.com-mn6n2er0l77",
+                "DomainName": "sandro-aws-estudio-s3-001.s3.us-east-2.amazonaws.com",
+                "OriginPath": "/SalaryPredict",
+                "CustomHeaders": {
+                    "Quantity": 0
+                },
+                "S3OriginConfig": {
+                    "OriginAccessIdentity": "",
+                    "OriginReadTimeout": 30
+                },
+                "ConnectionAttempts": 3,
+                "ConnectionTimeout": 10,
+                "OriginShield": {
+                    "Enabled": false
+                },
+                "OriginAccessControlId": "E1X0CWHY5P995I"
+            }
+        ]
+    },
+    "OriginGroups": {
+        "Quantity": 0
+    },
+    "DefaultCacheBehavior": {
+        "TargetOriginId": "sandro-aws-estudio-s3-001.s3.us-east-2.amazonaws.com-mn6n2er0l77",
+        "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+            "Enabled": false,
+            "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+            "Quantity": 7,
+            "Items": [
+                "HEAD",
+                "DELETE",
+                "POST",
+                "GET",
+                "OPTIONS",
+                "PUT",
+                "PATCH"
+            ],
+            "CachedMethods": {
+                "Quantity": 2,
+                "Items": [
+                    "HEAD",
+                    "GET"
+                ]
+            }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+            "Quantity": 0
+        },
+        "FunctionAssociations": {
+            "Quantity": 0
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+        "GrpcConfig": {
+            "Enabled": false
+        }
+    },
+    "CacheBehaviors": {
+        "Quantity": 0
+    },
+    "CustomErrorResponses": {
+        "Quantity": 0
+    },
+    "Comment": "",
+    "Logging": {
+        "Enabled": false,
+        "IncludeCookies": false,
+        "Bucket": "",
+        "Prefix": ""
+    },
+    "PriceClass": "PriceClass_All",
+    "Enabled": true,
+    "ViewerCertificate": {
+        "CloudFrontDefaultCertificate": true,
+        "SSLSupportMethod": "vip",
+        "MinimumProtocolVersion": "TLSv1",
+        "CertificateSource": "cloudfront"
+    },
+    "Restrictions": {
+        "GeoRestriction": {
+            "RestrictionType": "none",
+            "Quantity": 0
+        }
+    },
+    "WebACLId": "arn:aws:wafv2:us-east-1:997141224904:global/webacl/CreatedByCloudFront-7b1032e4/fe0d3fbe-ad09-465b-9649-ca7c66122b79",
+    "HttpVersion": "http2",
+    "IsIPV6Enabled": true,
+    "ContinuousDeploymentPolicyId": "",
+    "Staging": false
+}
