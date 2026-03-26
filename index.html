@@ -308,7 +308,7 @@
                 alert("Error in the prediction. Please try again.");
                 return;
             }
-
+            alert("Please wait while we calculate your salary prediction...");
             const data = await response.json();
             resultValue.textContent = `$ ${data.prediction.toLocaleString()}`;
             resultPanel.classList.add("active");
